@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="t_dbrecord">
+	<typeAlias alias="dbrecVO"
+		type="com.wanderluster.db.DbRecord" />
+
+   <parameterMap class="dbrecVO" id="dbRecordMp">
+		<parameter property="cid" jdbcType="NUMBER" />
+		<parameter property="title" jdbcType="VARCHAR" />
+		<parameter property="content" jdbcType="VARCHAR" />
+		<parameter property="lastmodify" jdbcType="TIMESTAMP" />
+	</parameterMap>
+     
+    <insert id="createDbRec" parameterMap="dbRecordMp">
+    	   <selectKey resultClass="int" type="post" keyProperty="cid" >   
+         <![CDATA[SELECT LAST_INSERT_ID() AS CID ]]>
+      </selectKey> 
+
+		insert into t_dbrecord(cid,title,content,lastmodify) values
+		(?,?,?,?)
+    </insert>
+    
+ 	<select id="getDbById" parameterClass="int"
+		resultClass="dbrecVO">
+		select * from t_dbrecord where cid=#value#
+	</select>
+	
+    <select id="getAllDb" 
+		resultClass="dbrecVO">
+		select * from t_dbrecord 
+	</select>
+	
+   
+   <delete id="deleteDb" parameterClass="int">
+    	DELETE FROM t_dbrecord WHERE cid=#value#
+    </delete>
+    
+      <delete id="deleteAllDb">
+    	DELETE FROM t_dbrecord 
+    </delete>
+    
+</sqlMap>

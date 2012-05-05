@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/db
+END
+db.txt
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/db/db.txt
+END
+DbRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/db/DbRecord.java
+END
+DocRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/db/DocRecord.java
+END
+Admin.java
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/db/Admin.java
+END
+DbRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/db/DbRecordDao.java
+END
+DocRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/db/DocRecordDao.java
+END
+DbRecordDaoImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/db/DbRecordDaoImpl.java
+END
+DocRecordDaoImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/db/DocRecordDaoImpl.java
+END
+AdminDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/db/AdminDao.java
+END

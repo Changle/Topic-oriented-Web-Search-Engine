@@ -1,0 +1,841 @@
+package com.wanderluster.train;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+
+import libsvm.svm;
+import libsvm.svm_model;
+import libsvm.svm_node;
+
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.Token;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.snowball.SnowballAnalyzer;
+
+public class trainData {
+
+	public static void buildTrainData() throws IOException {
+		String negativePath = "./corpus/20ng-train-all-terms.txt";
+		String positivePath = "./corpus/r8-train-all-terms.txt";
+		String fileout = "./corpus/trainData";
+		FileReader fr1 = new FileReader(negativePath);
+		FileReader fr2 = new FileReader(positivePath);
+		FileWriter fw = new FileWriter(fileout);
+		BufferedReader br1 = new BufferedReader(fr1);
+		BufferedReader br2 = new BufferedReader(fr2);
+		BufferedWriter bw = new BufferedWriter(fw);
+		Hashtable<String, Integer> map = new Hashtable<String, Integer>();
+		String readoneline;
+		while (((readoneline = br1.readLine()) != null)) {
+			int pos = readoneline.indexOf("\t");
+			String topic = readoneline.substring(0, pos);
+			String content = readoneline.substring(pos + 1);
+
+			if (!map.containsKey(topic)) {
+				map.put(topic, new Integer(1));
+				StringBuffer result = new StringBuffer();
+				StringTokenizer st = new StringTokenizer(content, " ");
+				while (st.hasMoreTokens()) {
+					String tmp = st.nextToken();
+					if (tmp.length() >= 3) {
+						result.append(tmp + " ");
+					}
+				}
+				bw.write("-1\t" + result.toString());
+				bw.newLine();
+			} else {
+				Integer num = map.get(topic);
+				if (num < 50) {
+					StringBuffer result = new StringBuffer();
+					StringTokenizer st = new StringTokenizer(content, " ");
+					while (st.hasMoreTokens()) {
+						String tmp = st.nextToken();
+						if (tmp.length() >= 3) {
+							result.append(tmp + " ");
+						}
+					}
+					bw.write("-1\t" + result.toString());
+					bw.newLine();
+					map.put(topic, num + 1);
+				}
+			}
+		}
+
+		while (((readoneline = br2.readLine()) != null)) {
+			int pos = readoneline.indexOf("\t");
+			String topic = readoneline.substring(0, pos);
+			String content = readoneline.substring(pos + 1);
+			if (topic.equals("acq") || topic.equals("earn")
+					|| topic.equals("money-fx") || topic.equals("trade")
+					|| topic.equals("interest")) {
+				if (!map.containsKey(topic)) {
+					map.put(topic, new Integer(1));
+					StringBuffer result = new StringBuffer();
+					StringTokenizer st = new StringTokenizer(content, " ");
+					while (st.hasMoreTokens()) {
+						String tmp = st.nextToken();
+						if (tmp.length() >= 3) {
+							result.append(tmp + " ");
+						}
+					}
+					bw.write("1\t" + result.toString());
+					bw.newLine();
+				} else {
+					Integer num = map.get(topic);
+					if (topic.equals("acq") && num < 300) {
+						StringBuffer result = new StringBuffer();
+						StringTokenizer st = new StringTokenizer(content, " ");
+						while (st.hasMoreTokens()) {
+							String tmp = st.nextToken();
+							if (tmp.length() >= 3) {
+								result.append(tmp + " ");
+							}
+						}
+						bw.write("1\t" + result.toString());
+						bw.newLine();
+						map.put(topic, num + 1);
+					} else if (topic.equals("earn") && num < 450) {
+						StringBuffer result = new StringBuffer();
+						StringTokenizer st = new StringTokenizer(content, " ");
+						while (st.hasMoreTokens()) {
+							String tmp = st.nextToken();
+							if (tmp.length() >= 3) {
+								result.append(tmp + " ");
+							}
+						}
+						bw.write("1\t" + result.toString());
+						bw.newLine();
+						map.put(topic, num + 1);
+					} else if (topic.equals("money-fx") && num < 100) {
+						StringBuffer result = new StringBuffer();
+						StringTokenizer st = new StringTokenizer(content, " ");
+						while (st.hasMoreTokens()) {
+							String tmp = st.nextToken();
+							if (tmp.length() >= 3) {
+								result.append(tmp + " ");
+							}
+						}
+						bw.write("1\t" + result.toString());
+						bw.newLine();
+						map.put(topic, num + 1);
+					} else if (topic.equals("trade") && num < 100) {
+						StringBuffer result = new StringBuffer();
+						StringTokenizer st = new StringTokenizer(content, " ");
+						while (st.hasMoreTokens()) {
+							String tmp = st.nextToken();
+							if (tmp.length() >= 3) {
+								result.append(tmp + " ");
+							}
+						}
+						bw.write("1\t" + result.toString());
+						bw.newLine();
+						map.put(topic, num + 1);
+					} else if (topic.equals("interest") && num < 50) {
+						StringBuffer result = new StringBuffer();
+						StringTokenizer st = new StringTokenizer(content, " ");
+						while (st.hasMoreTokens()) {
+							String tmp = st.nextToken();
+							if (tmp.length() >= 3) {
+								result.append(tmp + " ");
+							}
+						}
+						bw.write("1\t" + result.toString());
+						bw.newLine();
+						map.put(topic, num + 1);
+					}
+				}
+			}
+		}
+
+		bw.flush();
+		br1.close();
+		bw.close();
+		fw.close();
+
+	}
+
+	public static void buildTestData() throws IOException {
+		String negativePath = "./corpus/20ng-test-all-terms.txt";
+		String positivePath = "./corpus/r8-test-all-terms.txt";
+		String fileout = "./corpus/testData";
+		FileReader fr1 = new FileReader(negativePath);
+		FileReader fr2 = new FileReader(positivePath);
+		FileWriter fw = new FileWriter(fileout);
+		BufferedReader br1 = new BufferedReader(fr1);
+		BufferedReader br2 = new BufferedReader(fr2);
+		BufferedWriter bw = new BufferedWriter(fw);
+		Hashtable<String, Integer> map = new Hashtable<String, Integer>();
+		String readoneline;
+		while (((readoneline = br1.readLine()) != null)) {
+			int pos = readoneline.indexOf("\t");
+			String topic = readoneline.substring(0, pos);
+			String content = readoneline.substring(pos + 1);
+
+			if (!map.containsKey(topic)) {
+				map.put(topic, new Integer(1));
+				StringBuffer result = new StringBuffer();
+				StringTokenizer st = new StringTokenizer(content, " ");
+				while (st.hasMoreTokens()) {
+					String tmp = st.nextToken();
+					if (tmp.length() >= 3) {
+						result.append(tmp + " ");
+					}
+				}
+				bw.write("-1\t" + result.toString());
+				bw.newLine();
+			} else {
+				Integer num = map.get(topic);
+				if (num < 30) {
+					StringBuffer result = new StringBuffer();
+					StringTokenizer st = new StringTokenizer(content, " ");
+					while (st.hasMoreTokens()) {
+						String tmp = st.nextToken();
+						if (tmp.length() >= 3) {
+							result.append(tmp + " ");
+						}
+					}
+					bw.write("-1\t" + result.toString());
+					bw.newLine();
+					map.put(topic, num + 1);
+				}
+			}
+		}
+
+		while (((readoneline = br2.readLine()) != null)) {
+			int pos = readoneline.indexOf("\t");
+			String topic = readoneline.substring(0, pos);
+			String content = readoneline.substring(pos + 1);
+			if (topic.equals("acq") || topic.equals("earn")
+					|| topic.equals("money-fx") || topic.equals("trade")
+					|| topic.equals("interest")) {
+				if (!map.containsKey(topic)) {
+					map.put(topic, new Integer(1));
+					StringBuffer result = new StringBuffer();
+					StringTokenizer st = new StringTokenizer(content, " ");
+					while (st.hasMoreTokens()) {
+						String tmp = st.nextToken();
+						if (tmp.length() >= 3) {
+							result.append(tmp + " ");
+						}
+					}
+					bw.write("1\t" + result.toString());
+					bw.newLine();
+				} else {
+					Integer num = map.get(topic);
+					if (topic.equals("acq") && num < 200) {
+						StringBuffer result = new StringBuffer();
+						StringTokenizer st = new StringTokenizer(content, " ");
+						while (st.hasMoreTokens()) {
+							String tmp = st.nextToken();
+							if (tmp.length() >= 3) {
+								result.append(tmp + " ");
+							}
+						}
+						bw.write("1\t" + result.toString());
+						bw.newLine();
+						map.put(topic, num + 1);
+					} else if (topic.equals("earn") && num < 350) {
+						StringBuffer result = new StringBuffer();
+						StringTokenizer st = new StringTokenizer(content, " ");
+						while (st.hasMoreTokens()) {
+							String tmp = st.nextToken();
+							if (tmp.length() >= 3) {
+								result.append(tmp + " ");
+							}
+						}
+						bw.write("1\t" + result.toString());
+						bw.newLine();
+						map.put(topic, num + 1);
+					} else if (topic.equals("money-fx") && num < 80) {
+						StringBuffer result = new StringBuffer();
+						StringTokenizer st = new StringTokenizer(content, " ");
+						while (st.hasMoreTokens()) {
+							String tmp = st.nextToken();
+							if (tmp.length() >= 3) {
+								result.append(tmp + " ");
+							}
+						}
+						bw.write("1\t" + result.toString());
+						bw.newLine();
+						map.put(topic, num + 1);
+					} else if (topic.equals("trade") && num < 80) {
+						StringBuffer result = new StringBuffer();
+						StringTokenizer st = new StringTokenizer(content, " ");
+						while (st.hasMoreTokens()) {
+							String tmp = st.nextToken();
+							if (tmp.length() >= 3) {
+								result.append(tmp + " ");
+							}
+						}
+						bw.write("1\t" + result.toString());
+						bw.newLine();
+						map.put(topic, num + 1);
+					} else if (topic.equals("interest") && num < 50) {
+						StringBuffer result = new StringBuffer();
+						StringTokenizer st = new StringTokenizer(content, " ");
+						while (st.hasMoreTokens()) {
+							String tmp = st.nextToken();
+							if (tmp.length() >= 3) {
+								result.append(tmp + " ");
+							}
+						}
+						bw.write("1\t" + result.toString());
+						bw.newLine();
+						map.put(topic, num + 1);
+					}
+				}
+			}
+		}
+
+		bw.flush();
+		br1.close();
+		bw.close();
+		fw.close();
+
+	}
+
+	public static void selectFeature() throws IOException {
+		String trainPath = "./corpus/trainData";
+		String stopPath = "./corpus/english.stop";
+		String outPath = "./corpus/features";
+		FileWriter fw = new FileWriter(outPath);
+		FileReader fr = new FileReader(trainPath);
+		FileReader fr2 = new FileReader(stopPath);
+		BufferedWriter bw = new BufferedWriter(fw);
+		BufferedReader br = new BufferedReader(fr);
+		BufferedReader br2 = new BufferedReader(fr2);
+		String oneline;
+
+		ArrayList<String> as = new ArrayList<String>();
+		while ((oneline = br2.readLine()) != null) {
+			as.add(oneline);
+		}
+		String[] stopWords = new String[as.size()];
+		as.toArray(stopWords);
+
+		Hashtable<String, Integer> hs = new Hashtable<String, Integer>();
+
+		Analyzer analyzer = new SnowballAnalyzer("English", stopWords);
+
+		try {
+			while ((oneline = br.readLine()) != null) {
+				int pos = oneline.indexOf("\t");
+				String topic = oneline.substring(0, pos);
+				String content = oneline.substring(pos + 1);
+				// StringTokenizer st=new StringTokenizer(content," ");
+
+				TokenStream stream = analyzer.tokenStream("contents",
+						new StringReader(content));
+
+				while (true) {
+					Token token = stream.next();
+					if (token == null)
+						break;
+					String tmp = token.termText();
+					if (!hs.containsKey(tmp)) {
+						hs.put(tmp, new Integer(1));
+					} else {
+						Integer num = hs.get(tmp);
+						hs.put(tmp, num + 1);
+					}
+				}
+
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		List<Map.Entry> list = new ArrayList<Map.Entry>(hs.entrySet());
+		Collections.sort(list, new Comparator<Map.Entry>() {
+			public int compare(Map.Entry e1, Map.Entry e2) {
+				Integer i1 = (Integer) e1.getValue();
+				Integer i2 = (Integer) e2.getValue();
+				return i2.compareTo(i1);
+			}
+		});
+		int count = 0;
+		System.out.println("word - freq");
+		System.out.println("-------------");
+		for (Map.Entry e : list) {
+			Integer num = (Integer) e.getValue();
+			String term = (String) e.getKey();
+			if (count++ < 2000) {
+				bw.write(term);
+				bw.newLine();
+			}
+
+		}
+
+		bw.close();
+
+		System.out.println(hs.keySet().size());
+		System.out.println(count);
+
+	}
+
+	public static void calcuTFIDF() throws IOException {
+
+		Hashtable<String, Double> idf = new Hashtable<String, Double>();
+		ArrayList<String> terms = new ArrayList<String>();
+		double fileCount = 0.0;
+		String featurePath = "./corpus/features";
+		String featureWeight = "./corpus/featureWeight";
+		String trainPath = "./corpus/trainData";
+		String testPath = "./corpus/testData";
+		String stopPath = "./corpus/english.stop";
+		String trainOutPath = "./corpus/trainVectors";
+		String testOutPath = "./corpus/testVectors";
+		BufferedReader br = new BufferedReader(new FileReader(featurePath));
+		BufferedWriter featureWriter = new BufferedWriter(new FileWriter(
+				featureWeight));
+		BufferedReader trainReader = new BufferedReader(new FileReader(
+				trainPath));
+		BufferedReader testReader = new BufferedReader(new FileReader(testPath));
+		BufferedReader br2 = new BufferedReader(new FileReader(stopPath));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(trainOutPath));
+		BufferedWriter testWriter = new BufferedWriter(new FileWriter(
+				testOutPath));
+		String oneline;
+		ArrayList<String> as = new ArrayList<String>();
+		while ((oneline = br2.readLine()) != null) {
+			as.add(oneline);
+		}
+		String[] stopWords = new String[as.size()];
+		as.toArray(stopWords);
+		Analyzer analyzer = new SnowballAnalyzer("English", stopWords);
+
+		while ((oneline = br.readLine()) != null) {
+			idf.put(oneline, 0.0);
+			terms.add(oneline);
+		}
+
+		while ((oneline = trainReader.readLine()) != null) {
+
+			int pos = oneline.indexOf("\t");
+			String topic = oneline.substring(0, pos);
+			String content = oneline.substring(pos + 1);
+			fileCount++;
+			Hashtable<String, Integer> termList = new Hashtable<String, Integer>();
+			TokenStream stream = analyzer.tokenStream("", new StringReader(
+					content));
+			while (true) {
+				Token token = stream.next();
+				if (token == null)
+					break;
+				String tmp = token.termText();
+				if (!termList.containsKey(tmp))
+					termList.put(tmp, new Integer(1));
+			}
+			Set<String> keys = termList.keySet();
+			for (String tmp : keys) {
+				if (idf.containsKey(tmp)) {
+					Double num = idf.get(tmp);
+					idf.put(tmp, num + 1);
+				}
+			}
+		}
+
+		for (String term : terms) {
+
+			double weightOfTerm = Math.log((double) fileCount / idf.get(term)
+					+ 0.01);
+			featureWriter.write(term + " " + weightOfTerm);
+			featureWriter.newLine();
+			idf.put(term, weightOfTerm);
+
+		}
+		featureWriter.flush();
+		featureWriter.close();
+
+		trainReader = new BufferedReader(new FileReader(trainPath));
+		while ((oneline = trainReader.readLine()) != null) {
+
+			int pos = oneline.indexOf("\t");
+			String topic = oneline.substring(0, pos);
+			String content = oneline.substring(pos + 1);
+			Hashtable<String, Integer> termFrequent = new Hashtable<String, Integer>();
+			TokenStream stream = analyzer.tokenStream("", new StringReader(
+					content));
+			while (true) {
+				Token token = stream.next();
+				if (token == null)
+					break;
+				String tmp = token.termText();
+				if (!termFrequent.containsKey(tmp))
+					termFrequent.put(tmp, new Integer(1));
+				else {
+					Integer num = termFrequent.get(tmp);
+					termFrequent.put(tmp, num + 1);
+				}
+			}
+			double weights[] = new double[terms.size()];
+			double denominator = 0.0;
+			int i = 0;
+			for (String term : terms) {
+				double count;
+				if (termFrequent.containsKey(term)) {
+					count = termFrequent.get(term);
+				} else {
+					count = 0;
+				}
+
+				double tmp = count * idf.get(term);
+				denominator += tmp;
+				weights[i++] = tmp;
+			}
+			denominator = Math.sqrt(denominator);
+			writer.write(topic);
+			for (int j = 1; j <= weights.length; j++) {
+				double tmp = weights[j - 1];
+				if (tmp > 0.0) {
+					tmp = Math.sqrt(tmp) / denominator;
+					writer.write(" " + j + ":" + tmp);
+				}
+			}
+			writer.newLine();
+		}
+
+		while ((oneline = testReader.readLine()) != null) {
+
+			int pos = oneline.indexOf("\t");
+			String topic = oneline.substring(0, pos);
+			String content = oneline.substring(pos + 1);
+			Hashtable<String, Integer> termFrequent = new Hashtable<String, Integer>();
+			TokenStream stream = analyzer.tokenStream("", new StringReader(
+					content));
+			while (true) {
+				Token token = stream.next();
+				if (token == null)
+					break;
+				String tmp = token.termText();
+				if (!termFrequent.containsKey(tmp))
+					termFrequent.put(tmp, new Integer(1));
+				else {
+					Integer num = termFrequent.get(tmp);
+					termFrequent.put(tmp, num + 1);
+				}
+			}
+			double weights[] = new double[terms.size()];
+			double denominator = 0.0;
+			int i = 0;
+			for (String term : terms) {
+				double count;
+				if (termFrequent.containsKey(term)) {
+					count = termFrequent.get(term);
+				} else {
+					count = 0;
+				}
+				double tmp = count * idf.get(term);
+				denominator += tmp;
+				weights[i++] = tmp;
+			}
+			denominator = Math.sqrt(denominator);
+			testWriter.write(topic);
+			for (int j = 1; j <= weights.length; j++) {
+				double tmp = weights[j - 1];
+				if (tmp > 0.0) {
+					tmp = Math.sqrt(tmp) / denominator;
+					testWriter.write(" " + j + ":" + tmp);
+				}
+			}
+			testWriter.newLine();
+		}
+		writer.close();
+		testWriter.close();
+	}
+
+	public static String scale(String content) throws NumberFormatException,
+			IOException {
+
+		String line = content;
+		double lower = -1.0;
+		double upper = 1.0;
+		double[] feature_max = null;
+		double[] feature_min = null;
+		int max_index = 2000;
+
+		int i, index;
+		BufferedReader fp_restore = null;
+		String restore_filename = "./corpus/svmRange";
+		fp_restore = new BufferedReader(new FileReader(restore_filename));
+
+		try {
+			feature_max = new double[(max_index + 1)];
+			feature_min = new double[(max_index + 1)];
+		} catch (OutOfMemoryError e) {
+			System.err.println("can't allocate enough memory");
+			System.exit(1);
+		}
+
+		for (i = 0; i <= max_index; i++) {
+			feature_max[i] = -Double.MAX_VALUE;
+			feature_min[i] = Double.MAX_VALUE;
+		}
+
+		/* pass 2: find out min/max value */
+
+		int next_index = 1;
+		double target;
+		double value;
+
+		StringTokenizer st = new StringTokenizer(line, " \t\n\r\f:");
+		target = Double.parseDouble(st.nextToken());
+
+		while (st.hasMoreTokens()) {
+			index = Integer.parseInt(st.nextToken());
+			value = Double.parseDouble(st.nextToken());
+
+			for (i = next_index; i < index; i++) {
+				feature_max[i] = Math.max(feature_max[i], 0);
+				feature_min[i] = Math.min(feature_min[i], 0);
+			}
+
+			feature_max[index] = Math.max(feature_max[index], value);
+			feature_min[index] = Math.min(feature_min[index], value);
+			next_index = index + 1;
+		}
+
+		for (i = next_index; i <= max_index; i++) {
+			feature_max[i] = Math.max(feature_max[i], 0);
+			feature_min[i] = Math.min(feature_min[i], 0);
+		}
+
+		/* pass 2.5: save/restore feature_min/feature_max */
+		if (restore_filename != null) {
+			// fp_restore rewinded in finding max_index
+			int idx;
+			double fmin, fmax;
+
+			if (fp_restore.read() == 'x') {
+				fp_restore.readLine(); // pass the '\n' after 'x'
+				st = new StringTokenizer(fp_restore.readLine());
+				lower = Double.parseDouble(st.nextToken());
+				upper = Double.parseDouble(st.nextToken());
+				String restore_line = null;
+				while ((restore_line = fp_restore.readLine()) != null) {
+					StringTokenizer st2 = new StringTokenizer(restore_line);
+					idx = Integer.parseInt(st2.nextToken());
+					fmin = Double.parseDouble(st2.nextToken());
+					fmax = Double.parseDouble(st2.nextToken());
+					if (idx <= max_index) {
+						feature_min[idx] = fmin;
+						feature_max[idx] = fmax;
+					}
+				}
+			}
+			fp_restore.close();
+		}
+
+		/* pass 3: scale */
+		StringBuffer newContent = new StringBuffer();
+		if (content != null) {
+
+			next_index = 1;
+			st = new StringTokenizer(line, " \t\n\r\f:");
+			target = Double.parseDouble(st.nextToken());
+			newContent.append((int) target + " ");
+
+			while (st.hasMoreElements()) {
+				index = Integer.parseInt(st.nextToken());
+				value = Double.parseDouble(st.nextToken());
+
+				if (value == feature_min[index])
+					value = lower;
+				else if (value == feature_max[index])
+					value = upper;
+				else
+					value = lower + (upper - lower)
+							* (value - feature_min[index])
+							/ (feature_max[index] - feature_min[index]);
+
+				if (value != 0) {
+					newContent.append(index + ":" + (float) value + " ");
+				}
+			}
+
+		}
+
+		return newContent.toString();
+
+	}
+
+	public static String convertToVector(String content) throws IOException {
+		StringBuffer result = new StringBuffer();
+		BufferedReader reader = new BufferedReader(new FileReader(
+				"./corpus/english.stop"));
+		BufferedReader br = new BufferedReader(new FileReader("./corpus/featureWeight"));
+		Hashtable<String,Integer> hs=new Hashtable<String,Integer>();
+		Hashtable<String,Double> idf=new Hashtable<String,Double>();
+		ArrayList<String> features=new ArrayList<String>();
+	
+		ArrayList<String> as = new ArrayList<String>();
+		String oneline;
+		int i=0;
+		while ((oneline = br.readLine()) != null) {
+			
+			StringTokenizer st = new StringTokenizer(oneline, " ");
+			String name = st.nextToken();
+		//	System.out.println(name);
+			double value = Double.valueOf(st.nextToken());
+			features.add(name);
+			idf.put(name, value);
+		}
+		double []weights=new double[features.size()];
+		while((oneline=reader.readLine())!=null)
+		{
+			as.add(oneline);
+		}
+		String[] stopWords = new String[as.size()];
+		as.toArray(stopWords);
+		Analyzer analyzer = new SnowballAnalyzer("English", stopWords);
+		TokenStream stream = analyzer.tokenStream("", new StringReader(
+				content));
+
+		while (true) {
+			Token token = stream.next();
+			if (token == null)
+				break;
+			String tmp = token.termText();
+			if(!hs.contains(tmp))
+			{
+				hs.put(tmp, new Integer(1));
+				
+			}else
+			{
+				Integer num=hs.get(tmp);
+				hs.put(tmp, num+1);
+			}
+		}
+		
+		double denominator = 0.0;
+		i=0;
+		for (String str:features) {
+			
+			double count;
+		
+			if (hs.containsKey(str)) {
+				count = hs.get(str);
+			} else {
+				count = 0;
+			}
+			
+			double tmp = count * idf.get(str);
+			denominator += tmp;
+			weights[i++] = tmp;
+		}
+		
+		denominator = Math.sqrt(denominator);
+		result.append("1");
+
+		for (int j = 1; j <= weights.length; j++) {
+			double tmp = weights[j - 1];
+			if (tmp > 0.0) {
+				tmp = Math.sqrt(tmp) / denominator;
+				result.append(" " + j + ":" + tmp);
+			}
+		}
+		
+		return scale(result.toString());
+	}
+
+	public static int predict(String content) throws IOException {
+		svm_model model;
+		String modelPath = "./corpus/trainVectors.scale.model";
+		model = svm.svm_load_model(modelPath);
+		int pos = content.indexOf(" ");
+		int classid = Integer.valueOf(content.substring(0, pos));
+		String terms = content.substring(pos + 1);
+		StringTokenizer st = new StringTokenizer(terms, " ");
+		int length = st.countTokens();
+		int i = 0;
+		svm_node[] svm_nodes = new svm_node[length];
+		while (st.hasMoreTokens()) {
+			String tmp = st.nextToken();
+			int indice = Integer
+					.valueOf(tmp.substring(0, tmp.indexOf(":")));
+			double value = Double
+					.valueOf(tmp.substring(tmp.indexOf(":") + 1));
+			svm_nodes[i] = new svm_node();
+			svm_nodes[i].index = indice;
+			svm_nodes[i].value = value;
+			i++;
+		}
+		int predict_result = (int) svm.svm_predict(model, svm_nodes);
+		return predict_result;
+	
+	}
+
+	public static void predictBatch() throws IOException {
+		svm_model model;
+		String modelPath = "./corpus/trainVectors.scale.model";
+		String testPath = "./corpus/testVectors.scale";
+		BufferedReader reader = new BufferedReader(new FileReader(testPath));
+		model = svm.svm_load_model(modelPath);
+		String oneline;
+		double correct = 0.0;
+		double total = 0.0;
+		while ((oneline = reader.readLine()) != null) {
+			int pos = oneline.indexOf(" ");
+			int classid = Integer.valueOf(oneline.substring(0, pos));
+			String content = oneline.substring(pos + 1);
+			StringTokenizer st = new StringTokenizer(content, " ");
+			int length = st.countTokens();
+			int i = 0;
+			svm_node[] svm_nodes = new svm_node[length];
+			while (st.hasMoreTokens()) {
+				String tmp = st.nextToken();
+				int indice = Integer
+						.valueOf(tmp.substring(0, tmp.indexOf(":")));
+				double value = Double
+						.valueOf(tmp.substring(tmp.indexOf(":") + 1));
+				svm_nodes[i] = new svm_node();
+				svm_nodes[i].index = indice;
+				svm_nodes[i].value = value;
+				i++;
+			}
+			int predict_result = (int) svm.svm_predict(model, svm_nodes);
+			if (predict_result == classid)
+				correct++;
+			total++;
+		}
+
+		System.out.println("Accuracy is :" + correct / total);
+
+	}
+
+	public static void main(String args[]) throws IOException {
+		// buildTestData();
+
+		BufferedReader reader = new BufferedReader(new FileReader(
+				"./corpus/news"));
+		String oneline;
+		StringBuffer sb=new StringBuffer();
+		while ((oneline = reader.readLine()) != null)  {
+			sb.append(oneline+" ");
+		}
+		
+		String vc=convertToVector(sb.toString());
+		int out=predict(vc);
+		System.out.println(out);
+		
+		// selectFeature();
+		// calcuTFIDF();
+
+		// predict();
+
+	}
+
+}

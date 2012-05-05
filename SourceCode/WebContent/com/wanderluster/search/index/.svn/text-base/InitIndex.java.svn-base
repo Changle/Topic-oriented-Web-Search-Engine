@@ -1,0 +1,49 @@
+package com.wanderluster.search.index;
+
+import java.io.IOException;
+
+import jeasy.analysis.MMAnalyzer;
+
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+
+import com.wanderluster.db.DocRecordDaoImpl;
+import com.wanderluster.util.Constant;
+
+public class InitIndex {
+	
+    private DocRecordDaoImpl docDao;
+
+	
+	public DocRecordDaoImpl getDocDao() {
+		return docDao;
+	}
+
+	public void setDocDao(DocRecordDaoImpl docDao) {
+		this.docDao = docDao;
+	}
+
+	public void init() throws IOException {
+
+		Analyzer analyzer = new MMAnalyzer();
+		String indexDir = Constant.indexDir;
+		Directory dir = FSDirectory.getDirectory(indexDir);
+
+		IndexWriter writer = new IndexWriter(dir, analyzer, true,
+				IndexWriter.MaxFieldLength.LIMITED);
+
+		Document document = new Document();
+		
+		writer.addDocument(document);
+
+		writer.optimize();
+
+		writer.close();
+		
+		docDao.delAllDoc();
+	}
+
+}

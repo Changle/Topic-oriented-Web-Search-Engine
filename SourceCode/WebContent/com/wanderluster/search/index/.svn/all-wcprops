@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/search/index
+END
+DelDocumentFromIndex.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/search/index/DelDocumentFromIndex.java
+END
+PDFIndex.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/search/index/PDFIndex.java
+END
+DbParser.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/search/index/DbParser.java
+END
+HtmlParserExtraction.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/search/index/HtmlParserExtraction.java
+END
+CrawledHtmlParser.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/search/index/CrawledHtmlParser.java
+END
+ParserWordAndToIndex.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/search/index/ParserWordAndToIndex.java
+END
+InitIndex.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/opinionmining/!svn/ver/10/SentimentSearch/src/com/wanderluster/search/index/InitIndex.java
+END

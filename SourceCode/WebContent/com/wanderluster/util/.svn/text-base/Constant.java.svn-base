@@ -1,0 +1,51 @@
+package com.wanderluster.util;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.ServletActionContext;
+
+public class Constant {
+	// public static String basedir="\\";
+
+	public static String basedir = "";
+
+	public static String CONTEXT = "/Wanderluster/";
+
+	public static String indexDir = "//Users/changlewang/luceneindex";
+
+	public static String PDFdir = basedir + "datadir/pdfdir/";
+
+	public static String PDFTxtdir = "/home/ethan/datadir/pdftxtdir/";
+
+	public static String ConvertorPATH = "/home/ethan/workshop/xpdf/pdftotext";
+
+	public static String Docdir = basedir + "datadir/worddir/";
+
+	public static String Htmldir = basedir + "datadir/htmldir/";
+
+	public static String BlogContext = "/blog/showContent.jsp?cid=";
+
+	public static String getRootRealPath(String str){
+		
+		HttpServletRequest request = ServletActionContext.getRequest();
+
+		basedir=request.getContextPath();
+		
+		
+	   if("pdf".equals(str))
+		   
+			return request.getRealPath(PDFdir);
+
+	   else if("doc".equals(str))
+		   
+			return request.getRealPath(Docdir);
+	   
+	   else if("html".equals(str))
+		   
+			return request.getRealPath(Htmldir);
+	   
+	   return basedir;
+	   
+	}
+
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+     <package name="com.wanderluster.action" extends="struts-default">
+     
+        <action name="LoginAction" class="loginAction">
+        	<result name="success">admin/index.jsp</result>
+        	<result name="error">error.jsp</result>
+        </action>
+        
+        
+         <action name="FileIndexAction" class="fileIndexAction">
+        	<result name="success">admin/fileindex.jsp</result>
+        </action> 
+        
+         <action name="ClassifyAction" class="com.wanderluster.action.Classification">
+        	<result name="success">classifyResult.jsp</result>
+        </action>
+        
+        <action name="ClusterAction" class="com.wanderluster.action.Clustering">
+        	<result name="success">clusteringResult.jsp</result>
+        </action>
+        
+        <action name="SearchAction" class="com.wanderluster.action.MainSearch">
+        	<result name="success">result.jsp</result>
+        	<result name="error">error.jsp</result>
+        </action>
+        
+        <action name="DeleteAction" class="com.wanderluster.action.DeleteSearch">
+        	<result name="success">result_list.jsp</result>
+        </action>
+        
+        <action name="DoDeleteAction" class="doDeleteAction">
+        	<result name="success">delSearch.jsp</result>
+        </action>
+        
+        <action name="AdvanceSearchAction" class="com.wanderluster.action.AdvanceSearchAction">
+        	<result name="success">result.jsp</result>
+        </action>
+        
+        <action name="fileUploadInput">
+        	<result name="success">/admin/fileUploadInput.jsp</result>
+        </action>
+        
+         <action name="fileUpload" class="fileUploadAction">
+        	<result name="success">/admin/fileUpload.jsp</result>
+        </action>
+    
+     </package>
+     
+</struts>

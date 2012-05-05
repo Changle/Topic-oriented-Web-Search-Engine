@@ -1,0 +1,23 @@
+drop table t_admin;
+CREATE TABLE t_admin
+{
+  id int(12) AUTO_INCREMENT PRIMARY KEY,
+  username varchar(20),
+  password varchar(20)
+}
+
+
+drop table t_docrecord;
+create table t_docrecord(
+id int(12) AUTO_INCREMENT PRIMARY key,
+filename varchar(200),
+doctype varchar(10),
+lastmodify  bigint(15)
+)
+
+create table t_dbrecord(
+cid int(12) AUTO_INCREMENT PRIMARY key,
+title varchar(20),
+content varchar(2000),
+lastmodify timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+)

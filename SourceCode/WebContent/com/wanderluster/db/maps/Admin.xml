@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="t_admin">
+	<typeAlias alias="adminVO"
+		type="com.wanderluster.db.Admin" />
+
+ 	<select id="getByNameAndPwd" parameterClass="java.util.Map"
+		resultClass="adminVO">
+		select * from t_admin where username=#username# and password=#password#
+	</select>
+
+</sqlMap>
+

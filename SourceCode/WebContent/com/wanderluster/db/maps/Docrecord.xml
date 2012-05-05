@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="t_docrecord">
+	<typeAlias alias="docrecVO"
+		type="com.wanderluster.db.DocRecord" />
+
+   <parameterMap class="docrecVO" id="docRecordMp">
+		<parameter property="id" jdbcType="NUMBER" />
+		<parameter property="filename" jdbcType="VARCHAR" />
+		<parameter property="doctype" jdbcType="VARCHAR" />
+		<parameter property="lastmodify" jdbcType="NUMBER" />
+	</parameterMap>
+     
+    <insert id="createDocRec" parameterMap="docRecordMp">
+    	   <selectKey resultClass="int" type="post" keyProperty="id" >   
+         <![CDATA[SELECT LAST_INSERT_ID() AS ID ]]>
+      </selectKey> 
+
+		insert into t_docrecord(id,filename,doctype,lastmodify) values
+		(?,?,?,?)
+    </insert>
+ 	<select id="getByFileName" parameterClass="java.lang.String"
+		resultClass="docrecVO">
+		select * from t_docrecord where filename=#filename#
+	</select>
+	
+	<select id="getDocTop1" parameterClass="java.lang.String"
+		resultClass="docrecVO">
+		select * from t_docrecord where doctype=#value# order by lastmodify desc limit 0,1
+   </select>
+   
+   <delete id="deleteDoc" parameterClass="int">
+    	DELETE FROM t_docrecord WHERE id=#value#
+    </delete>
+    
+      <delete id="deleteAllDoc">
+    	DELETE FROM t_docrecord 
+    </delete>
+    
+      <select id="getDocById" parameterClass="int"
+		resultClass="docrecVO">
+		select * from t_docrecord where id=#value#
+      </select>
+</sqlMap>

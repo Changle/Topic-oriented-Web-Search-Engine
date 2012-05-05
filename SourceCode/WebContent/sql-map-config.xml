@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE sqlMapConfig 
+PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN" "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+	<settings
+		cacheModelsEnabled="true"
+		enhancementEnabled="true"
+		lazyLoadingEnabled="true"
+		maxRequests="32"
+		maxSessions="10"
+		maxTransactions="5"
+		useStatementNamespaces="false"
+	/>
+
+	<transactionManager type="JDBC">
+		<dataSource type="SIMPLE">
+			<property name="JDBC.Driver"
+				value="com.mysql.jdbc.Driver" />
+			<property name="JDBC.ConnectionURL" value="jdbc:mysql://localhost:3306/wanderluster" />
+			<property name="JDBC.Username" value="root" />
+			<property name="JDBC.Password" value="root" />
+		</dataSource>
+		
+	</transactionManager>
+
+      <sqlMap resource="com/wanderluster/db/maps/Admin.xml" />
+      <sqlMap resource="com/wanderluster/db/maps/Docrecord.xml" />
+      <sqlMap resource="com/wanderluster/db/maps/DbRecord.xml" />
+
+    
+		
+</sqlMapConfig>
+
